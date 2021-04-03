@@ -19,7 +19,7 @@ namespace RrTestTask
 
         private async void Start()
         {
-            int cardsCount = Random.Range(minCardsCount, maxCardsCount);
+            int cardsCount = Random.Range(minCardsCount, maxCardsCount + 1);
             var textureLoader = new WebTextureLoader(textureRequestsTimeoutSec);
             var randomTextureLoader = new RandomTextureLoader(textureLoader, "https://picsum.photos/{1}/{0}");
             IEnumerable<Texture2D> textures = await LoadTextures(randomTextureLoader, cardsCount, CancellationToken.None);
