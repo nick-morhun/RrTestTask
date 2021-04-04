@@ -215,6 +215,7 @@ MonoBehaviour:
   cardsParent: {fileID: 1912778273}
   radius: 1500
   cardAngularSize: 9
+  cardDestructionDelaySec: 4
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

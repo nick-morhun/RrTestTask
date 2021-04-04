@@ -20,6 +20,8 @@ namespace RrTestTask
         [SerializeField] private CardSettings cardSettings;
         [SerializeField] private PlayerHandView playerHandView;
         [SerializeField] private StatRandomizerView statRandomizerView;
+        private PlayerHand hand;
+        private IStatRandomizer statRandomizer;
 
         private async void Start()
         {
@@ -36,11 +38,17 @@ namespace RrTestTask
             var cardGenerator = new CardGenerator(cardSettings);
             IEnumerable<Card> cards = cardGenerator.Create(icons.Count);
             var cardViewFactory = new CardViewFactory(cardViewPrefab, icons);
-            var hand = new PlayerHand(cards);
-
+            hand = new PlayerHand(cards, cardSettings);
             playerHandView.SetModel(hand.Cards, cardViewFactory);
-            using var statRandomizer = new UnityStatRandomizer(cardSettings, hand.Cards);
+
+            statRandomizer = new UnityStatRandomizer(cardSettings, hand.Cards);
             statRandomizerView.SetModel(statRandomizer);
+        }
+
+        private void OnDestroy()
+        {
+            hand?.Dispose();
+            statRandomizer?.Dispose();
         }
 
         private async Task<IEnumerable<Texture2D>> LoadTextures(RandomTextureLoader randomTextureLoader, int count, CancellationToken cancellationToken)

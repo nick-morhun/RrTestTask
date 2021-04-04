@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using JetBrains.Annotations;
 using UniRx;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace RrTestTask
         [SerializeField] private Transform cardsParent;
         [SerializeField] private float radius = 1f;
         [SerializeField] private float cardAngularSize = 5f;
+        [SerializeField] private float cardDestructionDelaySec;
 
         private readonly PlayerHandLayout layout = new PlayerHandLayout();
         private readonly List<CardView> cardViews = new List<CardView>();
@@ -72,8 +74,28 @@ namespace RrTestTask
 
         private void OnRemoved(CollectionRemoveEvent<Card> removed)
         {
-            cardViews[removed.Index].ClearModel();
-            PositionCards();
+            CardView cardView = cardViews[removed.Index];
+            cardViews.RemoveAt(removed.Index);
+
+            UniTask.Delay(TimeSpan.FromSeconds(cardDestructionDelaySec), DelayType.DeltaTime)
+                .ContinueWith(() =>
+                {
+                    cardView.ClearModel();
+                    Destroy(cardView.gameObject);
+                    RepositionCards();
+                });
+        }
+
+        private void RepositionCards()
+        {
+            IReadOnlyList<Tuple<Vector3, Quaternion>> layouts = layout.Calculate(radius, cardAngularSize, model.Count);
+
+            for (var i = 0; i < cardViews.Count; i++)
+            {
+                CardView view = cardViews[i];
+                (Vector3 position, Quaternion rotation) = layouts[i];
+                view.MoveTo(position, rotation);
+            }
         }
     }
 }
