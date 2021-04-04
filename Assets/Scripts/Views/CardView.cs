@@ -13,8 +13,13 @@ namespace RrTestTask
         [SerializeField] private StatView attackView;
         [SerializeField] private StatView healthView;
         [SerializeField] private StatView manaView;
+        [SerializeField] private CardDragView dragView;
+        [SerializeField] private CardDragInput dragInput;
         [SerializeField] private float repositionDurationSec;
         private Sequence positionSequence;
+        private Card model;
+
+        public CardDragInput DragInput => dragInput;
 
         public void SetModel([CanBeNull] Card card, [NotNull] IReadOnlyList<Sprite> icons)
         {
@@ -25,6 +30,9 @@ namespace RrTestTask
             attackView.SetModel(card?.Attack);
             healthView.SetModel(card?.Health);
             manaView.SetModel(card?.Mana);
+            dragView.SetModel(card);
+            dragInput.SetModel(card);
+            model = card;
         }
 
         public void ClearModel()
@@ -33,16 +41,21 @@ namespace RrTestTask
             attackView.SetModel(null);
             healthView.SetModel(null);
             manaView.SetModel(null);
+            dragView.SetModel(null);
+            dragInput.SetModel(null);
         }
 
         public void MoveTo(Vector3 position, Quaternion rotation)
         {
             Transform cachedTransform = transform;
             positionSequence.Kill();
+
+            model.IsMoving.Value = true;
             positionSequence = DOTween.Sequence();
             Tween positionTween = DOTween.To(() => cachedTransform.localPosition, current => cachedTransform.localPosition = current, position, repositionDurationSec);
             Tween rotationTween = DOTween.To(() => cachedTransform.localRotation, current => cachedTransform.localRotation = current, rotation.eulerAngles, repositionDurationSec);
-            positionSequence.Join(positionTween).Join(rotationTween);
+            positionSequence.Join(positionTween).Join(rotationTween)
+                .OnKill(() => model.IsMoving.Value = false);
         }
 
         private void Awake()
@@ -51,6 +64,7 @@ namespace RrTestTask
             Assert.IsNotNull(attackView);
             Assert.IsNotNull(healthView);
             Assert.IsNotNull(manaView);
+            Assert.IsNotNull(dragView);
         }
 
         private void OnDestroy()

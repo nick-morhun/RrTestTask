@@ -20,6 +20,7 @@ namespace RrTestTask
         [SerializeField] private CardSettings cardSettings;
         [SerializeField] private PlayerHandView playerHandView;
         [SerializeField] private StatRandomizerView statRandomizerView;
+        [SerializeField] private DropTarget dropTarget;
         private PlayerHand hand;
         private IStatRandomizer statRandomizer;
 
@@ -28,6 +29,7 @@ namespace RrTestTask
             Assert.IsNotNull(cardViewPrefab);
             Assert.IsNotNull(playerHandView);
             Assert.IsNotNull(statRandomizerView);
+            Assert.IsNotNull(dropTarget);
 
             int cardsCount = Random.Range(minCardsCount, maxCardsCount + 1);
             var textureLoader = new WebTextureLoader(textureRequestsTimeoutSec);
@@ -43,6 +45,7 @@ namespace RrTestTask
 
             statRandomizer = new UnityStatRandomizer(cardSettings, hand.Cards);
             statRandomizerView.SetModel(statRandomizer);
+            dropTarget.SetCardViews(playerHandView.CardViews);
         }
 
         private void OnDestroy()
