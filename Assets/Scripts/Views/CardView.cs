@@ -24,6 +24,14 @@ namespace RrTestTask
             manaView.SetModel(card?.Mana);
         }
 
+        public void ClearModel()
+        {
+            iconView.SetModel(null);
+            attackView.SetModel(null);
+            healthView.SetModel(null);
+            manaView.SetModel(null);
+        }
+
         private void Awake()
         {
             Assert.IsNotNull(iconView);

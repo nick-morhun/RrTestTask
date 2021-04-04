@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Random = UnityEngine.Random;
 
 namespace RrTestTask
@@ -14,16 +15,28 @@ namespace RrTestTask
         [SerializeField] private uint cardIconWidth = 100;
         [SerializeField] private int minCardsCount = 4;
         [SerializeField] private int maxCardsCount = 6;
-
-        private List<Texture2D> loadedTextures = new List<Texture2D>();
+        [SerializeField] private uint pixelsPerUnit = 100;
+        [SerializeField] private CardView cardViewPrefab;
+        [SerializeField] private CardSettings cardSettings;
+        [SerializeField] private PlayerHandView playerHandView;
 
         private async void Start()
         {
+            Assert.IsNotNull(cardViewPrefab);
+            Assert.IsNotNull(playerHandView);
+
             int cardsCount = Random.Range(minCardsCount, maxCardsCount + 1);
             var textureLoader = new WebTextureLoader(textureRequestsTimeoutSec);
             var randomTextureLoader = new RandomTextureLoader(textureLoader, "https://picsum.photos/{1}/{0}");
             IEnumerable<Texture2D> textures = await LoadTextures(randomTextureLoader, cardsCount, CancellationToken.None);
-            loadedTextures.AddRange(textures);
+            var cardSpriteFactory = new CardSpriteFactory(cardIconHeight, cardIconWidth, pixelsPerUnit);
+            IReadOnlyList<Sprite> icons = textures.Select(cardSpriteFactory.Create).ToList();
+            var cardGenerator = new CardGenerator(cardSettings);
+            IEnumerable<Card> cards = cardGenerator.Create(icons.Count);
+            var cardViewFactory = new CardViewFactory(cardViewPrefab, icons);
+            var hand = new PlayerHand(cards);
+
+            playerHandView.SetModel(hand.Cards, cardViewFactory);
         }
 
         private async Task<IEnumerable<Texture2D>> LoadTextures(RandomTextureLoader randomTextureLoader, int count, CancellationToken cancellationToken)
