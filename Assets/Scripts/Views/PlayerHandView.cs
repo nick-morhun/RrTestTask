@@ -55,8 +55,8 @@ namespace RrTestTask
         {
             foreach (CardView cardView in cardViews)
             {
-                cardView.SetModel(null, Array.Empty<Sprite>());
-                Destroy(cardView);
+                cardView.ClearModel();
+                Destroy(cardView.gameObject);
             }
 
             cardViews.Clear();
