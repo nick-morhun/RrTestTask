@@ -11,6 +11,7 @@ namespace RrTestTask
         public void SetModel(IObservable<int> value)
         {
             subscription?.Dispose();
+            subscription = null;
 
             if (value != null)
             {
