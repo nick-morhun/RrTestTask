@@ -189,6 +189,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valueText: {fileID: 2640249930613447894}
+  tweenDuration: 3
 --- !u!1 &4199364717317658264
 GameObject:
   m_ObjectHideFlags: 0
@@ -1055,6 +1056,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valueText: {fileID: 8517687599097970419}
+  tweenDuration: 3
 --- !u!1 &8330337744111807380
 GameObject:
   m_ObjectHideFlags: 0
@@ -1145,6 +1147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   valueText: {fileID: 6184960092278921779}
+  tweenDuration: 3
 --- !u!1 &8935113452485425461
 GameObject:
   m_ObjectHideFlags: 0

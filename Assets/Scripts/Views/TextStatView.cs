@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using DG.Tweening;
+using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -7,6 +9,9 @@ namespace RrTestTask
     public sealed class TextStatView : StatView
     {
         [SerializeField] private TMP_Text valueText;
+        [SerializeField] private float tweenDuration;
+        private int? currentValue;
+        [CanBeNull] private Tween currentTween;
 
         protected override void Awake()
         {
@@ -16,7 +21,21 @@ namespace RrTestTask
 
         protected override void Show(int value)
         {
-            valueText.text = value.ToString();
+            if (currentValue.HasValue)
+            {
+                currentTween.Kill();
+                currentTween = DOTween
+                    .To(() => currentValue.Value, current =>
+                    {
+                        currentValue = current;
+                        valueText.text = current.ToString();
+                    }, value, tweenDuration);
+            }
+            else
+            {
+                valueText.text = value.ToString();
+                currentValue = value;
+            }
         }
     }
 }

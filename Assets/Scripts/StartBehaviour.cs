@@ -19,11 +19,13 @@ namespace RrTestTask
         [SerializeField] private CardView cardViewPrefab;
         [SerializeField] private CardSettings cardSettings;
         [SerializeField] private PlayerHandView playerHandView;
+        [SerializeField] private StatRandomizerView statRandomizerView;
 
         private async void Start()
         {
             Assert.IsNotNull(cardViewPrefab);
             Assert.IsNotNull(playerHandView);
+            Assert.IsNotNull(statRandomizerView);
 
             int cardsCount = Random.Range(minCardsCount, maxCardsCount + 1);
             var textureLoader = new WebTextureLoader(textureRequestsTimeoutSec);
@@ -37,6 +39,8 @@ namespace RrTestTask
             var hand = new PlayerHand(cards);
 
             playerHandView.SetModel(hand.Cards, cardViewFactory);
+            using var statRandomizer = new UnityStatRandomizer(cardSettings, hand.Cards);
+            statRandomizerView.SetModel(statRandomizer);
         }
 
         private async Task<IEnumerable<Texture2D>> LoadTextures(RandomTextureLoader randomTextureLoader, int count, CancellationToken cancellationToken)
